@@ -33,17 +33,20 @@ The *source code* file hash and tree hash required in :ref:`chapter-metadata`, a
 Where an SBOM records a hash of a binary and does not say what was hashed, that hash **MUST** be of the binary as distributed, with no transformation applied.
 
 A *component vendor* or *firmware vendor* **MAY** also publish a hash taken over a transformed form of the same binary, so that it can be compared against a build-time value.
-Such a hash **MUST** accompany the untransformed hash rather than replace it, **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX ``checksums`` entry, and **MUST** name the transformation inside the value itself – those fields being closed forms with nowhere to put a label:
+Such a hash **MUST** accompany the untransformed hash rather than replace it, and **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX ``checksums`` entry.
+Those fields mean the hash of the file, so a tool that does not implement the transformation would read one from them and report a mismatch for a binary that is not modified.
+The value **MUST** therefore identify the transformation itself, and **SHOULD** be a URI, following the pattern already set by ``gitoid:blob:sha256:…`` and ``swh:1:cnt:…``.
+In CycloneDX this is a *component* property; in SPDX 3 it is a ``ContentIdentifier``, which sits beside ``Hash`` for exactly this purpose and whose value is an ``anyURI``:
 
 ::
 
   {
     "name": "osf:normalizedHash",
-    "value": "uefi-pe-rebase0/v1:sha256:1348ff9c695f80b3..."
+    "value": "uefi-pe-rebase0.v1:sha256:1348ff9c695f80b3..."
   }
 
-The name before the first colon identifies the transformation, **MUST NOT** contain a colon, and **SHOULD** be documented where a reader can find it.
-This document defines no such transformations, and the property name above is illustrative: an ``osf:`` namespace would first need registering in the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_.
+This document defines no such transformations.
+The property name above is illustrative, and naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_; an ``osf`` namespace would first need registering there.
 
 A tool **MUST NOT** compare hashes produced by different transformations, an absent label meaning none was applied.
 Such hashes are not comparable, which is neither a match nor a mismatch, and a tool **MUST NOT** report a binary as verified on that basis; an unlabeled hash that does not match is a mismatch.
