@@ -20,6 +20,35 @@ Detached metadata **MUST** `always contain the SHA256 hash value of the binary <
 The public key **SHOULD** be distributed on a keyserver or company website for verification.
 
 
+What a Hash Covers
+------------------
+
+A hash says nothing about what was done to the bytes before it was taken.
+Usually nothing is, but some *components* are transformed between being built and being shipped: a PE binary placed into an EFI file volume has base relocations applied throughout the image, and one converted to the smaller Terse Executable (TE) format has its PE/COFF headers replaced by a TE header.
+Neither changes what the *component* does, but both change its bytes, so a hash taken at build time and one re-derived from a shipped image can differ when nothing is wrong.
+
+This section concerns hashes of a binary.
+The *source code* file hash and tree hash required in :ref:`chapter-metadata`, and the checksum of a generated SBOM used as a collection ID, are unaffected.
+
+Where an SBOM records a hash of a binary and does not say what was hashed, that hash **MUST** be of the binary as distributed, with no transformation applied.
+
+A *component vendor* or *firmware vendor* **MAY** also publish a hash taken over a transformed form of the same binary, so that it can be compared against a build-time value.
+Such a hash **MUST** accompany the untransformed hash rather than replace it, **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX ``checksums`` entry, and **MUST** name the transformation inside the value itself – those fields being closed forms with nowhere to put a label:
+
+::
+
+  {
+    "name": "osf:normalizedHash",
+    "value": "uefi-pe-rebase0/v1:sha256:1348ff9c695f80b3..."
+  }
+
+The name before the first colon identifies the transformation, **MUST NOT** contain a colon, and **SHOULD** be documented where a reader can find it.
+This document defines no such transformations, and the property name above is illustrative: an ``osf:`` namespace would first need registering in the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_.
+
+A tool **MUST NOT** compare hashes produced by different transformations, an absent label meaning none was applied.
+Such hashes are not comparable, which is neither a match nor a mismatch, and a tool **MUST NOT** report a binary as verified on that basis; an unlabeled hash that does not match is a mismatch.
+
+
 Wasted Space Concerns
 ---------------------
 
