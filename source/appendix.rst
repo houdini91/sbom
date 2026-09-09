@@ -20,6 +20,38 @@ Detached metadata **MUST** `always contain the SHA256 hash value of the binary <
 The public key **SHOULD** be distributed on a keyserver or company website for verification.
 
 
+Hash Normalization
+------------------
+
+A hash says nothing about what was done to the bytes before it was taken.
+Usually nothing is, but some components are transformed between being built and being shipped: a PE binary placed into a firmware volume has its load address written into it, and one stored as a Terse Executable (TE) – a PE binary with its header prologue removed to save space – no longer has the same bytes as the PE binary it was built from.
+Neither changes the code, but both change the bytes, so a digest taken at build time and a digest re-derived from a shipped image can differ when nothing is actually wrong.
+
+Unless the SBOM says otherwise, a hash **MUST** be read as the digest of the artifact exactly as shipped, with nothing done to it.
+This is already what published SBOMs mean, so no vendor has to change anything to comply.
+In particular, the detached metadata hash described above is a hash of the binary as distributed.
+
+A vendor publishing a digest that is **not** that – for example one taken over a normalized form of the binary so that it can be compared against a build-time value – **MUST** say which transformation produced it.
+The label **SHOULD** be carried in a value that describes itself, so that it stays meaningful when copied between SBOM formats:
+
+::
+
+  <profile>:<algorithm>:<digest>
+
+In CycloneDX this is a component property, published alongside the unlabelled hash rather than replacing it:
+
+::
+
+  {
+    "name": "osf:moduleIdentity",
+    "value": "uefi-pe-rebase0/v1:sha256:1348ff9c695f80b3..."
+  }
+
+This document defines no normalization profiles and takes no position on which are worth having.
+It requires only that a transformed digest is labelled, so that a consumer can tell whether two digests are comparable at all.
+A consumer encountering a profile it does not implement **MUST NOT** compare that digest against one it computed itself: the outcome is *not comparable*, which is neither a match nor a mismatch.
+
+
 Wasted Space Concerns
 ---------------------
 
