@@ -35,7 +35,7 @@ Where an SBOM records a hash of a binary and does not say what was hashed, that 
 A *component vendor* or *firmware vendor* **MAY** also publish a hash taken over a transformed form of the same binary, so that it can be compared against a build-time value.
 Such a hash **MUST** accompany the untransformed hash rather than replace it, and **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX ``checksums`` entry.
 Those fields mean the hash of the file, so a tool that does not implement the transformation would read one from them and report a mismatch for a binary that is not modified.
-The value **MUST** therefore identify the transformation itself, and **SHOULD** be a URI, following the pattern already set by ``gitoid:blob:sha256:…`` and ``swh:1:cnt:…``.
+The value **MUST** therefore identify the transformation itself, and **SHOULD** be a URI, so that the identifier is unambiguous, cannot collide with one defined elsewhere, and can be split from the hash without knowing which transformation it names.
 In CycloneDX it is carried as a *component* property.
 SPDX has no field defined for it: ``ContentIdentifier`` is the closest, but its type vocabulary is closed to ``gitoid`` and ``swhid``, so a third value there does not validate.
 A value that identifies itself survives that gap, which is why the label belongs in the value rather than in a field:
