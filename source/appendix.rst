@@ -36,7 +36,9 @@ A *component vendor* or *firmware vendor* **MAY** also publish a hash taken over
 Such a hash **MUST** accompany the untransformed hash rather than replace it, and **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX ``checksums`` entry.
 Those fields mean the hash of the file, so a tool that does not implement the transformation would read one from them and report a mismatch for a binary that is not modified.
 The value **MUST** therefore identify the transformation itself, and **SHOULD** be a URI, following the pattern already set by ``gitoid:blob:sha256:…`` and ``swh:1:cnt:…``.
-In CycloneDX this is a *component* property; in SPDX 3 it is a ``ContentIdentifier``, which sits beside ``Hash`` for exactly this purpose and whose value is an ``anyURI``:
+In CycloneDX it is carried as a *component* property.
+SPDX has no field defined for it: ``ContentIdentifier`` is the closest, but its type vocabulary is closed to ``gitoid`` and ``swhid``, so a third value there does not validate.
+A value that identifies itself survives that gap, which is why the label belongs in the value rather than in a field:
 
 ::
 
