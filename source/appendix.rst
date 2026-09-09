@@ -24,14 +24,14 @@ Hash Normalization
 ------------------
 
 A hash says nothing about what was done to the bytes before it was taken.
-Usually nothing is, but some components are transformed between being built and being shipped: a UEFI module placed into a firmware volume has its load address written into it, and one stored as a Terse Executable has its PE header prologue discarded.
+Usually nothing is, but some components are transformed between being built and being shipped: a PE binary placed into a firmware volume has its load address written into it, and one stored as a Terse Executable (TE) – a PE binary with its header prologue removed to save space – no longer has the same bytes as the PE binary it was built from.
 Neither changes the code, but both change the bytes, so a digest taken at build time and a digest re-derived from a shipped image can differ when nothing is actually wrong.
 
 Unless the SBOM says otherwise, a hash **MUST** be read as the digest of the artifact exactly as shipped, with nothing done to it.
 This is already what published SBOMs mean, so no vendor has to change anything to comply.
 In particular, the detached metadata hash described above is a hash of the binary as distributed.
 
-A vendor publishing a digest that is **not** that -- for example one taken over a normalized form of the binary so that it can be compared against a build-time value -- **MUST** say which transformation produced it.
+A vendor publishing a digest that is **not** that – for example one taken over a normalized form of the binary so that it can be compared against a build-time value – **MUST** say which transformation produced it.
 The label **SHOULD** be carried in a value that describes itself, so that it stays meaningful when copied between SBOM formats:
 
 ::
