@@ -49,7 +49,7 @@ Where that value goes depends on the format, and only one of the three has somew
 
 The property name is illustrative. Naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_, and an ``osf`` namespace would first need registering there.
 
-**SPDX** has no field for it. ``ContentIdentifier`` is the closest fit, but its type vocabulary is closed to ``gitoid`` and ``swhid``, so a third value does not validate; SPDX 2.3 has no general-purpose property at all. A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore publish the untransformed hash only.
+**SPDX** has no field for it. ``ContentIdentifier`` is the closest fit, but its set of identifier types is a closed enumeration that cannot be extended, so a new one does not validate; SPDX 2.3 has no general-purpose property at all. A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore publish the untransformed hash only.
 
 **coSWID** has no field for it either: a ``hash-entry`` is a fixed pair of algorithm and value, and labelling one would need a registered CoSWID item that does not exist. The same applies — publish the untransformed hash only.
 
