@@ -35,7 +35,7 @@ Where an SBOM records a hash of a binary and does not name a transformation, tha
 A *component vendor* or *firmware vendor* **MAY** also publish a hash taken over a transformed form of the same binary, so that it can be compared against a build-time value.
 Such a hash **MUST** accompany the untransformed hash rather than replace it, and **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX ``Hash``.
 Those fields mean the hash of the file, so a tool that does not implement the transformation reads the value as an ordinary hash and reports a mismatch for an unmodified binary.
-The value **MUST** therefore name the transformation, and **SHOULD** be a URI, so that it is unambiguous and can be parsed without knowing which transformation it names.
+The value **MUST** therefore carry a label naming the transformation, and that label **SHOULD** be a URI, so that it is unambiguous and can be parsed without knowing which transformation it names.
 This document defines no transformations.
 
 Where that value goes depends on the format, and only one of the three has somewhere to put it.
@@ -52,8 +52,8 @@ Where that value goes depends on the format, and only one of the three has somew
 The property name is illustrative.
 Naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_, and an ``osf`` namespace would first need registering there.
 
-**SPDX** cannot carry the label.
-SPDX 3's ``contentIdentifier`` is the right field for it — it sits beside the hash and holds exactly this kind of self-describing identifier — but its list of identifier types is fixed, so a new one does not validate.
+**SPDX** has nowhere to put the label.
+The closest is SPDX 3's ``contentIdentifier``, which sits beside the hash and holds exactly this kind of self-describing value, but its list of identifier types is fixed, so a new one does not validate.
 A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore leave it out and publish only the untransformed hash, which goes in ``verifiedUsing`` as it always does — the same *component* as above:
 
 ::
