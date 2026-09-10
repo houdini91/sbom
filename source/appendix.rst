@@ -49,7 +49,7 @@ Where that value goes depends on the format, and only one of the three has somew
 
 The property name is illustrative. Naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_, and an ``osf`` namespace would first need registering there.
 
-**SPDX** has a field that would fit, and it cannot be used for this. SPDX 3's ``contentIdentifier`` holds exactly this kind of value beside the hash, but its identifier types are a closed enumeration that cannot be extended, so a new one does not validate. A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore leave it out and publish only the untransformed hash, which goes in ``verifiedUsing`` as it always does — for the same *component* as above:
+**SPDX** cannot carry the label. SPDX 3's ``contentIdentifier`` is the right field for it — it sits beside the hash and holds exactly this kind of self-describing identifier — but its list of identifier types is fixed, so a new one does not validate. A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore leave it out and publish only the untransformed hash, which goes in ``verifiedUsing`` as it always does — for the same *component* as above:
 
 ::
 
