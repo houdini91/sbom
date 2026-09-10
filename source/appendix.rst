@@ -62,7 +62,7 @@ Naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cy
       "hashValue": "3a7b40c59c7382fa07ebbe7a4b0390bbe9d5a156f82c13c98367d362ec1c9ac7" }
   ]
 
-There is nowhere to put the label: the closest field, SPDX 3's ``contentIdentifier``, has a fixed list of identifier types that a new one cannot join.
+The closest field, SPDX 3's ``contentIdentifier``, accepts only identifier types defined by SPDX itself, so using it would mean having one added there first — the same kind of step as registering a property namespace with CycloneDX, and one nobody has taken.
 
 **coSWID** publishes the untransformed hash in a ``hash-entry`` and omits the label.
 A ``hash-entry`` is a fixed pair of algorithm and value, and carrying a label beside it would need a registered CoSWID item that does not exist.
