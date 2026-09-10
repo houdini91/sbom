@@ -33,7 +33,7 @@ The *source code* file hash and tree hash required in :ref:`chapter-metadata`, a
 Where an SBOM records a hash of a binary and does not say what was hashed, that hash **MUST** be of the binary as distributed, with no transformation applied.
 
 A *component vendor* or *firmware vendor* **MAY** also publish a hash taken over a transformed form of the same binary, so that it can be compared against a build-time value.
-Such a hash **MUST** accompany the untransformed hash rather than replace it, and **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX ``checksums`` entry.
+Such a hash **MUST** accompany the untransformed hash rather than replace it, and **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX hash.
 Those fields mean the hash of the file, so a tool that does not implement the transformation would read one from them and report a mismatch for a binary that is not modified.
 The value **MUST** therefore identify the transformation itself, and **SHOULD** be a URI, so that the identifier is unambiguous, cannot collide with one defined elsewhere, and can be split from the hash without knowing which transformation it names.
 Where that value goes depends on the format, and only one of the three has somewhere to put it.
@@ -53,9 +53,10 @@ The property name is illustrative. Naming follows the `CycloneDX property taxono
 
 ::
 
-  "checksums": [
-    { "algorithm": "SHA256",
-      "checksumValue": "3a7b40c59c7382fa07ebbe7a4b0390bbe9d5a156f82c13c98367d362ec1c9ac7" }
+  "verifiedUsing": [
+    { "type": "Hash",
+      "algorithm": "sha256",
+      "hashValue": "3a7b40c59c7382fa07ebbe7a4b0390bbe9d5a156f82c13c98367d362ec1c9ac7" }
   ]
 
 **coSWID** has no field for it either: a ``hash-entry`` is a fixed pair of algorithm and value, and labelling one would need a registered CoSWID item that does not exist. A ``hash-entry`` therefore carries the untransformed hash above, and nothing further.
