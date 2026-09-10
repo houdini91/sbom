@@ -40,7 +40,7 @@ This document defines no transformations.
 
 Where that value goes depends on the format, and only one of the three has somewhere to put it.
 
-**CycloneDX** carries it as a *component* property, published alongside the untransformed hash:
+**CycloneDX** carries the label in a *component* property, published alongside the untransformed hash:
 
 ::
 
@@ -52,9 +52,7 @@ Where that value goes depends on the format, and only one of the three has somew
 The property name is illustrative.
 Naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_, and an ``osf`` namespace would first need registering there.
 
-**SPDX** has nowhere to put the label.
-The closest is SPDX 3's ``contentIdentifier``, which sits beside the hash and holds exactly this kind of self-describing value, but its list of identifier types is fixed, so a new one does not validate.
-A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore leave it out and publish only the untransformed hash, which goes in ``verifiedUsing`` as it always does — the same *component* as above:
+**SPDX** publishes the untransformed hash in ``verifiedUsing`` and omits the label — the same *component* as above:
 
 ::
 
@@ -64,9 +62,12 @@ A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore 
       "hashValue": "3a7b40c59c7382fa07ebbe7a4b0390bbe9d5a156f82c13c98367d362ec1c9ac7" }
   ]
 
-**coSWID** cannot carry it either.
-A ``hash-entry`` is a fixed pair of algorithm and value, and labelling one would need a registered CoSWID item that does not exist.
-A ``hash-entry`` therefore carries the untransformed hash alone.
+There is nowhere to put the label: the closest field, SPDX 3's ``contentIdentifier``, has a fixed list of identifier types that a new one cannot join.
+
+**coSWID** publishes the untransformed hash in a ``hash-entry`` and omits the label.
+A ``hash-entry`` is a fixed pair of algorithm and value, and carrying a label beside it would need a registered CoSWID item that does not exist.
+
+Where the label matters and the format cannot carry it, a *component vendor* or *firmware vendor* **SHOULD** also publish a CycloneDX export, as described in `Converting the SBOM`_.
 
 A tool **MUST NOT** compare hashes produced by different transformations; an absent label means none was applied.
 Such hashes are not comparable: the result is neither a match nor a mismatch, and a tool **MUST NOT** report the binary as verified.
