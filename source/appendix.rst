@@ -36,19 +36,24 @@ A *component vendor* or *firmware vendor* **MAY** also publish a hash taken over
 Such a hash **MUST** accompany the untransformed hash rather than replace it, and **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX ``checksums`` entry.
 Those fields mean the hash of the file, so a tool that does not implement the transformation would read one from them and report a mismatch for a binary that is not modified.
 The value **MUST** therefore identify the transformation itself, and **SHOULD** be a URI, so that the identifier is unambiguous, cannot collide with one defined elsewhere, and can be split from the hash without knowing which transformation it names.
-In CycloneDX it is carried as a *component* property.
-SPDX has no field defined for it: ``ContentIdentifier`` is the closest, but its type vocabulary is closed to ``gitoid`` and ``swhid``, so a third value there does not validate.
-A value that identifies itself survives that gap, which is why the label belongs in the value rather than in a field:
+Where that value goes depends on the format, and only one of the three has somewhere to put it.
+
+**CycloneDX** carries it as a *component* property, published alongside the untransformed hash:
 
 ::
 
   {
     "name": "osf:normalizedHash",
-    "value": "uefi-pe-rebase0.v1:sha256:1348ff9c695f80b3..."
+    "value": "uefi-pe-rebase0.v1:sha256:1348ff9c695f80b31915aa9f159aa3490121c9af446438feb742f8e78e681051"
   }
 
+The property name is illustrative. Naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_, and an ``osf`` namespace would first need registering there.
+
+**SPDX** has no field for it. ``ContentIdentifier`` is the closest fit, but its type vocabulary is closed to ``gitoid`` and ``swhid``, so a third value does not validate; SPDX 2.3 has no general-purpose property at all. A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore publish the untransformed hash only.
+
+**coSWID** has no field for it either: a ``hash-entry`` is a fixed pair of algorithm and value, and labelling one would need a registered CoSWID item that does not exist. The same applies — publish the untransformed hash only.
+
 This document defines no such transformations.
-The property name above is illustrative, and naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_; an ``osf`` namespace would first need registering there.
 
 A tool **MUST NOT** compare hashes produced by different transformations, an absent label meaning none was applied.
 Such hashes are not comparable, which is neither a match nor a mismatch, and a tool **MUST NOT** report a binary as verified on that basis; an unlabeled hash that does not match is a mismatch.
