@@ -20,6 +20,60 @@ Detached metadata **MUST** `always contain the SHA256 hash value of the binary <
 The public key **SHOULD** be distributed on a keyserver or company website for verification.
 
 
+What a Hash Covers
+------------------
+
+A hash says nothing about what was done to the bytes before it was taken.
+Usually nothing is, but some *components* are transformed between being built and being shipped: a PE binary placed into an EFI file volume has base relocations applied throughout the image, and one converted to the smaller Terse Executable (TE) format has its PE/COFF headers replaced by a TE header.
+Neither changes what the *component* does, but both change its bytes, so a hash taken at build time and one re-derived from a shipped image can differ when nothing is wrong.
+
+This section concerns hashes of a binary.
+The *source code* file hash and tree hash required in :ref:`chapter-metadata`, and the checksum of a generated SBOM used as a collection ID, are outside it.
+
+Where an SBOM records a hash of a binary and does not name a transformation, that hash **MUST** be of the binary as distributed, with none applied.
+
+A *component vendor* or *firmware vendor* **MAY** also publish a hash taken over a transformed form of the same binary, so that it can be compared against a build-time value.
+Such a hash **MUST** accompany the untransformed hash rather than replace it, and **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX ``Hash``.
+Those fields mean the hash of the file, so a tool that does not implement the transformation reads the value as an ordinary hash and reports a mismatch for an unmodified binary.
+The value **MUST** therefore carry a label naming the transformation, and that label **SHOULD** be a URI, so that it is unambiguous and can be parsed without knowing which transformation it names.
+This document defines no transformations.
+
+Where that value goes depends on the format, and only one of the three has somewhere to put it.
+
+**CycloneDX** carries the label in a *component* property, published alongside the untransformed hash:
+
+::
+
+  {
+    "name": "osf:normalizedHash",
+    "value": "uefi-pe-rebase0.v1:sha256:1348ff9c695f80b31915aa9f159aa3490121c9af446438feb742f8e78e681051"
+  }
+
+The property name is illustrative.
+Naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_, and an ``osf`` namespace would first need registering there.
+
+**SPDX** publishes the untransformed hash in ``verifiedUsing`` and omits the label — the same *component* as above:
+
+::
+
+  "verifiedUsing": [
+    { "type": "Hash",
+      "algorithm": "sha256",
+      "hashValue": "3a7b40c59c7382fa07ebbe7a4b0390bbe9d5a156f82c13c98367d362ec1c9ac7" }
+  ]
+
+The closest field, SPDX 3's ``contentIdentifier``, accepts only identifier types defined by SPDX itself, so using it would mean registering one in the `SPDX 3 model <https://github.com/spdx/spdx-3-model/blob/main/model/Software/Vocabularies/ContentIdentifierType.md>`_ first.
+
+**coSWID** publishes the untransformed hash in a ``hash-entry`` and omits the label.
+A ``hash-entry`` is a fixed pair of algorithm and value, and carrying a label beside it would mean registering an item in the `IANA CoSWID registry <https://www.iana.org/assignments/coswid>`_ first.
+
+Where the label matters and the format cannot carry it, a *component vendor* or *firmware vendor* **SHOULD** also publish a CycloneDX export, as described in `Converting the SBOM`_.
+
+A tool **MUST NOT** compare hashes produced by different transformations; an absent label means none was applied.
+Such hashes are not comparable: the result is neither a match nor a mismatch, and a tool **MUST NOT** report the binary as verified.
+An unlabeled hash that does not match is a mismatch.
+
+
 Wasted Space Concerns
 ---------------------
 
