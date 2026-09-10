@@ -28,14 +28,16 @@ Usually nothing is, but some *components* are transformed between being built an
 Neither changes what the *component* does, but both change its bytes, so a hash taken at build time and one re-derived from a shipped image can differ when nothing is wrong.
 
 This section concerns hashes of a binary.
-The *source code* file hash and tree hash required in :ref:`chapter-metadata`, and the checksum of a generated SBOM used as a collection ID, are unaffected.
+The *source code* file hash and tree hash required in :ref:`chapter-metadata`, and the checksum of a generated SBOM used as a collection ID, are outside it.
 
-Where an SBOM records a hash of a binary and does not say what was hashed, that hash **MUST** be of the binary as distributed, with no transformation applied.
+Where an SBOM records a hash of a binary and does not name a transformation, that hash **MUST** be of the binary as distributed, with none applied.
 
 A *component vendor* or *firmware vendor* **MAY** also publish a hash taken over a transformed form of the same binary, so that it can be compared against a build-time value.
-Such a hash **MUST** accompany the untransformed hash rather than replace it, and **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX hash.
-Those fields mean the hash of the file, so a tool that does not implement the transformation would read one from them and report a mismatch for a binary that is not modified.
-The value **MUST** therefore identify the transformation itself, and **SHOULD** be a URI, so that the identifier is unambiguous, cannot collide with one defined elsewhere, and can be split from the hash without knowing which transformation it names.
+Such a hash **MUST** accompany the untransformed hash rather than replace it, and **MUST NOT** be recorded in a coSWID ``hash-entry``, a CycloneDX ``hashes`` entry or an SPDX ``Hash``.
+Those fields mean the hash of the file, so a tool that does not implement the transformation reads the value as an ordinary hash and reports a mismatch for an unmodified binary.
+The value **MUST** therefore name the transformation, and **SHOULD** be a URI, so that it is unambiguous and can be parsed without knowing which transformation it names.
+This document defines no transformations.
+
 Where that value goes depends on the format, and only one of the three has somewhere to put it.
 
 **CycloneDX** carries it as a *component* property, published alongside the untransformed hash:
@@ -47,9 +49,12 @@ Where that value goes depends on the format, and only one of the three has somew
     "value": "uefi-pe-rebase0.v1:sha256:1348ff9c695f80b31915aa9f159aa3490121c9af446438feb742f8e78e681051"
   }
 
-The property name is illustrative. Naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_, and an ``osf`` namespace would first need registering there.
+The property name is illustrative.
+Naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_, and an ``osf`` namespace would first need registering there.
 
-**SPDX** cannot carry the label. SPDX 3's ``contentIdentifier`` is the right field for it — it sits beside the hash and holds exactly this kind of self-describing identifier — but its list of identifier types is fixed, so a new one does not validate. A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore leave it out and publish only the untransformed hash, which goes in ``verifiedUsing`` as it always does — for the same *component* as above:
+**SPDX** cannot carry the label.
+SPDX 3's ``contentIdentifier`` is the right field for it — it sits beside the hash and holds exactly this kind of self-describing identifier — but its list of identifier types is fixed, so a new one does not validate.
+A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore leave it out and publish only the untransformed hash, which goes in ``verifiedUsing`` as it always does — the same *component* as above:
 
 ::
 
@@ -59,12 +64,13 @@ The property name is illustrative. Naming follows the `CycloneDX property taxono
       "hashValue": "3a7b40c59c7382fa07ebbe7a4b0390bbe9d5a156f82c13c98367d362ec1c9ac7" }
   ]
 
-**coSWID** has no field for it either: a ``hash-entry`` is a fixed pair of algorithm and value, and labelling one would need a registered CoSWID item that does not exist. A ``hash-entry`` therefore carries the untransformed hash above, and nothing further.
+**coSWID** cannot carry it either.
+A ``hash-entry`` is a fixed pair of algorithm and value, and labelling one would need a registered CoSWID item that does not exist.
+A ``hash-entry`` therefore carries the untransformed hash alone.
 
-This document defines no such transformations.
-
-A tool **MUST NOT** compare hashes produced by different transformations, an absent label meaning none was applied.
-Such hashes are not comparable, which is neither a match nor a mismatch, and a tool **MUST NOT** report a binary as verified on that basis; an unlabeled hash that does not match is a mismatch.
+A tool **MUST NOT** compare hashes produced by different transformations; an absent label means none was applied.
+Such hashes are not comparable: the result is neither a match nor a mismatch, and a tool **MUST NOT** report the binary as verified.
+An unlabeled hash that does not match is a mismatch.
 
 
 Wasted Space Concerns
