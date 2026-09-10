@@ -49,9 +49,16 @@ Where that value goes depends on the format, and only one of the three has somew
 
 The property name is illustrative. Naming follows the `CycloneDX property taxonomy <https://github.com/CycloneDX/cyclonedx-property-taxonomy>`_, and an ``osf`` namespace would first need registering there.
 
-**SPDX** has no field for it: the closest fit, SPDX 3's ``ContentIdentifier``, uses a closed enumeration of identifier types that cannot be extended, so a new one does not validate. A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore publish the untransformed hash only.
+**SPDX** has no field for it: the closest fit, SPDX 3's ``ContentIdentifier``, uses a closed enumeration of identifier types that cannot be extended, so a new one does not validate. A *component vendor* or *firmware vendor* publishing in SPDX **MUST** therefore publish the untransformed hash and nothing further — for the same *component* as above:
 
-**coSWID** has no field for it either: a ``hash-entry`` is a fixed pair of algorithm and value, and labelling one would need a registered CoSWID item that does not exist. The same applies — publish the untransformed hash only.
+::
+
+  "checksums": [
+    { "algorithm": "SHA256",
+      "checksumValue": "3a7b40c59c7382fa07ebbe7a4b0390bbe9d5a156f82c13c98367d362ec1c9ac7" }
+  ]
+
+**coSWID** has no field for it either: a ``hash-entry`` is a fixed pair of algorithm and value, and labelling one would need a registered CoSWID item that does not exist. A ``hash-entry`` therefore carries the untransformed hash above, and nothing further.
 
 This document defines no such transformations.
 
